@@ -1,0 +1,15 @@
+{
+    "version": 1.0,
+    "settings": [
+        {
+            "params": "Cn=ES300h%2CIS300h%2CRC300h&Ver=ES300h_\"version+L\"%2CIS300h_\"F+SPORT+Mode+Black+S\"%2CIS300h_\"F+SPORT+Mode+Glitter\"%2CIS300h_\"F+SPORT\"%2CIS300h_\"F+SPORT･Mode+Plus\"%2CIS300h_FSPORT%2CRC300h_\"F+SPORT+Prime+Black\"%2CRC300h_\"F+SPORT\"%2CRC300h_F+SPORT&SMop=0006",
+            "shop": "レクサス神戸",
+            "email": "sample@gx.com"
+        },
+        {
+            "params": "Cn=ES300h%2CIS300h%2CRC300h&Ver=ES300h_\"version+L\"%2CIS300h_\"F+SPORT+Mode+Black+S\"%2CIS300h_\"F+SPORT+Mode+Glitter\"%2CIS300h_\"F+SPORT\"%2CIS300h_\"F+SPORT･Mode+Plus\"%2CIS300h_FSPORT%2CRC300h_\"F+SPORT+Prime+Black\"%2CRC300h_\"F+SPORT\"%2CRC300h_F+SPORT&SMop=0006",
+            "shop": "レクサス大分",
+            "email": "tes@gi.com"
+        }
+    ]
+}
