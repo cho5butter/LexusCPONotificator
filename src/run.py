@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
 import smtplib
 
 class Notificator:
@@ -146,7 +147,7 @@ class Mailer:
 
         self.msg = MIMEMultipart()
         self.msg['Subject'] = '[新着情報] ' + self.keyword + ' - Lexus CPO 監視システム'
-        self.msg['From'] = mail_from
+        self.msg['From'] = '%s <%s>'%(Header('Lexus CPO 監視システム'.encode('iso-2022-jp'),'iso-2022-jp').encode(), mail_from)
         self.msg['To'] = mail_to
 
         print('mail server login')
