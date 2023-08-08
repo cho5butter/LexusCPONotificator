@@ -42,45 +42,49 @@ class Notificator:
 
             soup = BeautifulSoup(req.text,"html.parser")
 
-            table = soup.find('table', id='table-result')
+            table = soup.find('div', class_='result-list')
 
-            rows = table.find_all('tbody')
+            rows = table.find_all('div', class_='result-list_item')
 
             for row in rows:
                 car = {}
 
-                name = row.find('a', class_='row-link')
+                name = row.find('h2', class_='c-result-name')
                 car['name'] = self.remove_space(name.text)
-                car['link'] = name.get('href')
+                link = row.find('a')
+                car['link'] = link.get('href')
                 car['full_link'] = self.cpo_url + car['link']            
 
-                fair = row.find('li', class_='fair')
-                if fair == None:
-                    is_fair = False
-                else:
-                    is_fair = True
-                car['is_fair'] = is_fair            
+                tags = row.find_all('li', class_='c-page-head-tags_item')
 
-                under_negotiation = row.find('li', class_='negotiations')
-                if under_negotiation == None:
-                    is_negotiation = False
-                else:
-                    is_negotiation = True
+                is_fair = False
+                is_negotiation = False
+
+                for tag in tags:
+                    if tag.text == 'フェア対象車':
+                        print('kiteruyo')
+                        is_fair = True
+                    if tag.text == '商談中':
+                        is_negotiation = True
+
+                car['is_fair'] = is_fair            
                 car['is_negotiation'] = is_negotiation               
 
-                dealer = row.find('span', class_='dealer')
-                car['dealer'] = self.remove_space(dealer.text)
+                dealer = row.find('p', class_='c-result-foot_shop')
+                dealer_name = dealer.find('span', class_='u-align-items-center')
+                car['dealer'] = self.remove_space(dealer_name.text)
                 
-                price = row.find('td', class_='base-price pc-cell')
-                car['price'] = self.remove_space(price.text)               
+                price = row.find('div', class_='c-result-price')
+                car['price'] = self.remove_space(price.text) 
 
-                model_year = row.find('td', class_='model-year pc-cell')
-                car['year'] = self.remove_space(model_year.text)
-                
-                mileage = row.find('td', class_='mileage pc-cell')
-                car['mileage'] = self.remove_space(mileage.text)               
+                result_detail =  row.find('div', class_='c-result-detail')
+                result_detail_items = result_detail.find_all('dl', class_='c-result-detail_item')
 
-                color = row.find('td', class_='body-color pc-cell')
+                car['year'] = self.remove_space(result_detail_items[0].find('dd').text)
+                car['mileage'] = self.remove_space(result_detail_items[1].find('dd').text)               
+                car['inspection'] = self.remove_space(result_detail_items[2].find('dd').text)               
+
+                color = row.find('p', class_='c-result-ruby')
                 car['color'] = self.remove_space(color.text)                
 
                 if car['is_fair'] == True and not car['dealer'] in self.dealers:
@@ -95,14 +99,15 @@ class Notificator:
                 self.log_carinfo('年式', car['year'])
                 self.log_carinfo('走行距離', car['mileage'])
                 self.log_carinfo('車体色', car['color'])
+                self.log_carinfo('車検', car['inspection'])
 
                 self.current_identification.append(car['link'])
                 self.cars[car['link']] = car
 
                 count = count + 1
 
-            pagination = soup.find('div', class_='pagination')
-            next_button = pagination.find('li', class_='next')
+            pagination = soup.find('ul', class_='md-pager-list')
+            next_button = pagination.find('li', class_='md-pager_next')
             is_continue = next_button.find('a')
             if is_continue == None:
                 break
@@ -165,6 +170,7 @@ class Mailer:
             self.write_header(i, car_detail['name'])
             self.write_body('フェア対象車', str(car_detail['is_fair']))
             self.write_body('交渉中', str(car_detail['is_negotiation']))
+            self.write_body('車検', car_detail['inspection'])
             self.write_body('販売店', car_detail['dealer'])
             self.write_body('販売価格', car_detail['price'])
             self.write_body('年式', car_detail['year'])
@@ -173,7 +179,7 @@ class Mailer:
             self.write_body('リンク', car_detail['full_link'])
             self.write_footer
 
-        self.body +="------------------------------------------\n\n※このメールは送信専用アドレスです。このアドレスにご返信されても確認致しかねますのでご了承ください。\n\nこのメールはLexus CPO監視システムβ1.0により自動送信されています。\n5分毎に更新を確認し、更新を検知した場合はお知らせします。"
+        self.body +="------------------------------------------\n\n※このメールは送信専用アドレスです。このアドレスにご返信されても確認致しかねますのでご了承ください。\n\nこのメールはLexus CPO監視システムβ1.1により自動送信されています。\n5分毎に更新を確認し、更新を検知した場合はお知らせします。"
 
     def write_header(self, num, name):
         self.body += str(num + 1) + ' -- ' + name + '\n'
